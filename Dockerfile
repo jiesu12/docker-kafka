@@ -18,9 +18,11 @@ RUN chown jie:jie ${DATA}
 RUN chown jie:jie ${LOG}
 
 COPY kafka_2.11-2.0.0 /kafka_2.11-2.0.0
-RUN chown -R jie:jie /kafka_2.11-2.0.0
-RUN sed -i 's/^log.dirs=.*/log.dirs=\/data\/kafka/' /kafka_2.11-2.0.0/config/server.properties
-RUN sed -i 's/^dataDir=.*/dataDir=\/data\/zookeeper/' /kafka_2.11-2.0.0/config/zookeeper.properties
+RUN chown -R jie:jie /kafka_2.11-2.0.0 && \
+sed -i 's/^log.dirs=.*/log.dirs=\/data\/kafka/' /kafka_2.11-2.0.0/config/server.properties && \
+sed -i 's/-Xmx1G -Xms1G/-Xmx512M/' /kafka_2.11-2.0.0/config/server.properties && \
+sed -i 's/^dataDir=.*/dataDir=\/data\/zookeeper/' /kafka_2.11-2.0.0/config/zookeeper.properties && \
+sed -i 's/-Xmx512M -Xms512M/-Xmx256M/' /kafka_2.11-2.0.0/config/zookeeper.properties
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
 
