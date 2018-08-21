@@ -1,6 +1,9 @@
-FROM jiesu/alpine-arm
+FROM armhf/alpine:3.5
 
-RUN apk --no-cache add openjdk8-jre supervisor bash
+RUN apk --no-cache add openjdk8-jre supervisor bash busybox-suid tzdata && \
+ln -snf /usr/share/zoneinfo/America/Chicago /etc/localtime && \
+echo 'America/Chicago' > /etc/timezone && \
+addgroup -g 1000 jie && adduser -D -G jie -u 1000 jie
 
 # Set supervisor
 RUN mkdir -p /var/log/supervisor
