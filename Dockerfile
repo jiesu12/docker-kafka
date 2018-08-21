@@ -2,8 +2,6 @@ FROM jiesu/alpine-arm
 
 RUN apk --no-cache add openjdk8-jre supervisor bash
 
-RUN addgroup -g 1000 jie && adduser -D -H -G jie -s /bin/false -u 1000 jie
-
 # Set supervisor
 RUN mkdir -p /var/log/supervisor
 COPY supervisord.conf /supervisord.conf
