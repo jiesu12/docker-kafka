@@ -1,13 +1,4 @@
-FROM armhf/alpine:3.5
-
-RUN apk --no-cache add openjdk8-jre supervisor bash busybox-suid tzdata && \
-ln -snf /usr/share/zoneinfo/America/Chicago /etc/localtime && \
-echo 'America/Chicago' > /etc/timezone && \
-addgroup -g 1000 jie && adduser -D -G jie -u 1000 jie
-
-# Set supervisor
-RUN mkdir -p /var/log/supervisor
-COPY supervisord.conf /supervisord.conf
+FROM ubuntu:bionic
 
 ENV DATA /data
 ENV LOG /log
@@ -15,8 +6,16 @@ ENV KAFKA_HOME /kafka_2.11-2.0.0
 
 VOLUME ${DATA} ${LOG}
 
-RUN chown jie:jie ${DATA}
-RUN chown jie:jie ${LOG}
+RUN apt-get update && \
+apt-get install -y --no-install-recommends openjdk-8-jre supervisor && \
+ln -snf /usr/share/zoneinfo/America/Chicago /etc/localtime && echo 'America/Chicago' > /etc/timezone && \
+addgroup --gid 1000 jie && useradd --no-create-home --gid 1000 --shell /bin/false --uid 1000 jie && \
+apt-get -y autoremove && apt-get -y clean && \
+rm -rf /var/lib/apt/lists/* && rm -rf /tmp/*
+
+# Set supervisor
+RUN mkdir -p /var/log/supervisor
+COPY supervisord.conf /supervisord.conf
 
 COPY kafka_2.11-2.0.0 ${KAFKA_HOME}
 RUN chown -R jie:jie ${KAFKA_HOME} && \
